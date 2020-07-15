@@ -20,18 +20,19 @@
 % overLap: wave overlap profile
 %
 % sponEmisson: spontaneous emission rate, gain, gain with broadening
-%% Code Version: 2020.6.21 - Chengxin
+%% Code Version: 2020.7.15 - Chengxin
 clear
 clc
 warning('off')
 addpath('library')
 addpath('functions')
+addpath('PreRunData')
 
 %% Constant and material parameters
 constant % initialize some global constant
 GaN = GaN_str(); % this object contains all parameters for GaN
 InN = InN_str(); % this object contains all parameters for InN
-x = 0.22; % define the In percentage
+x = 0.28; % define the In percentage
 Cp = 1.4; % define the bowling parameter
 InGaN = InGaN_str(GaN,InN,x,Cp); % this object contains all parameters for InGaN
 
@@ -39,7 +40,7 @@ InGaN = InGaN_str(GaN,InN,x,Cp); % this object contains all parameters for InGaN
 strain = strain_eff(InGaN,GaN); % this object contains info about strain effect
 
 %% Structure Definition
-Lb = 102e-10; % barrier length
+Lb = 103e-10; % barrier length
 Lw = 33e-10; % well length
 VBO = 0.3; % valence band offset
 str = structure(Lb,Lw); % this object contains all info about the structure
@@ -62,7 +63,18 @@ str = str.saveOrig(); % save a copy of the current structure profile
 kt = 0;
 n = 1e17 * 1e6; % cm^-3 to m^-3; % injection carrier density
 threshold = 0;
-FDM;
+% FDM;
+
+%% OR Load Data from PreRunData Directly
+% these data is generated under 10.3/3.3 nm GaN/InGaN QW with In of 28%
+
+load('at1E18.mat')
+load('at1E19.mat')
+% ...
+% you can load data you want included in the folder PreRunData or specified
+% the injection carrier density you want in the previous section and run
+% the FDM agian by uncommenting the FDM command.
+
 
 %% Get Rate
 % I move part of the code to the file getRate.m. It calculates the
@@ -75,14 +87,19 @@ getRate;
 
 %% Plotting
 hold on
-plot(sp_rate.wavLen*1e9,sp_rate.g_linewidth) % gain 
-plot(sp_rate.wavLen*1e9,sp_rate.g_linewidth_broad) % gain with broadening
-plot(sp_rate.wavLen*1e9,sp_rate.r_sp) % spontaneous emission rate
-
+% plot(sp_rate.wavLen*1e9,sp_rate.g_linewidth) % gain  [1/m]
+% plot(sp_rate.wavLen*1e9,sp_rate.g_linewidth_broad) % gain with broadening [1/m]
+% plot((sp_rate.wavLen*1e9),(sp_rate.r_sp)) % spontaneous emission rate [1/eV-s-m^3]
+% plot(sp_rate.hw,sp_rate.r_sp/1e6)
+plot(sp_rate.wavLen*1e9,sp_rate.r_sp_broad/1e6)
+set(gca, 'XDir','reverse')
+% plot(sp_rate.hw,sp_rate.g_linewidth_broad/100) % gain with broadening [1/cm]
 % title(sprintf('Total spontaneous emission rate [n = %.1e cm^{-3}]',n/1e6));
 grid on
 xlabel('wave length [nm]')
-% ylabel('gain [1/m]');
-% ylabel('[1/eV-s-m^3]')
+% xlabel('hw [eV]')
+% xlim([2.7 3.2])
+% ylabel('gain [1/cm]');
+ylabel('[1/eV-s-cm^3]')
 % xlim([550 600]);
-% ylim([-1e6 1e6])
+% ylim([-1e3 1e4])
