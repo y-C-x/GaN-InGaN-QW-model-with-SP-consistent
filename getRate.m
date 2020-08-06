@@ -19,3 +19,6 @@ sp_rate = sp_rate.getGain_broad(gamma,ES);
 
 %% Spontaneous Emission Rate
 sp_rate = sp_rate.getSponRate();
+
+%% Spontaneous Emission Rate with broadening
+sp_rate = sp_rate.getSponRate_broad(gamma,ES);
