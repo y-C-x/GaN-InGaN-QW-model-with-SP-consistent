@@ -44,7 +44,7 @@ classdef structure
         end
         
         function str = initialEcv(str,GaN,InGaN)
-            str.Ev0 = zeros(1,str.Ltot/str.dz);
+            str.Ev0 = zeros(1,uint16(str.Ltot/str.dz));
             str.Ec0 = str.Ev0 + GaN.Eg;
             str.Ev0(str.index_b1+1:str.index_w1) = str.Ev0(str.index_b1+1:str.index_w1)+str.Eoff_v;
             str.Ec0(str.index_b1+1:str.index_w1) = str.Ev0(str.index_b1+1:str.index_w1)+InGaN.Eg;
